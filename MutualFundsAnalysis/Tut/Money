@@ -1,0 +1,95 @@
+import scrapy
+
+
+class MoneySpider(scrapy.Spider):
+    name = "money"
+    start_urls = [
+        'http://www.moneycontrol.com/india/mutualfunds/mfinfo/portfolio_holdings/MBS104'
+    ]
+
+    def parse(self, response):
+	for fund in response.css('div.MT12'):
+	    j = 0
+	    for y in fund.css('a'):
+		j = j+1
+		p = ''
+		if j==1:
+		    p = 'Fund family'
+		elif j==2:
+		    p = 'Fund type'
+		else:
+		    continue
+	        yield {
+		    p: y.css("a::text").extract_first(),
+		    }
+        for money in response.css('table.tblporhd'):
+	    for row in money.css('tr'):
+		for cell in row.css('td'):
+		    for x in cell.css('a'):
+		        yield {
+                            'Equity': x.css("a::text").extract_first(),
+			    
+}
+			self.link = x.css("a::attr(href)").extract_first()
+						
+			
+			yield {
+                            
+			    'Link': x.css("a::attr(href)").extract_first(),
+}
+			i = 0
+		        for cell in row.css('td'):
+			    	i = i+1
+				s = ''
+				if i==3:
+				    s = 'Qty'
+				elif i==4:
+				    s = 'Value'
+				elif i==5:
+				    s = '%'
+				else:
+				    continue
+ 
+			        yield {
+                                s: cell.css("td.rgt::text").extract_first(),
+				}
+	
+	   
+class MF(scrapy.Spider):
+    name = "mf"
+    start_urls = [
+        'http://www.moneycontrol.com/india/stockpricequote/banks-private-sector/federalbank/FB'
+    ]
+
+    def parse(self, response):
+	mf = response.selector.xpath('//div[@class="PB10"]')
+	yield {
+				'Symbol': mf.xpath('div/text()').extract()[1],
+				
+				}
+
+
+
+
+
+
+for m in money:
+	   # for row in money.css('tr'):
+		#for cell in row.css('td'):
+		#    for x in cell.css('a'):
+		        yield {
+                            'Equity': m.xpath("tr/td/a/text()").extract(),
+			    'Link': m.xpath("tr/td/a/@href").extract(),
+			   # 'Qty': m.xpath("tr/td[@class='rgt']/text()").extract()[j],
+			   # 'Value': m.xpath("tr/td[@class='rgt']/text()").extract()[k],
+			   # '%': m.xpath("tr/td[@class='rgt']/text()").extract()[l],
+			}
+			#i = i + 1
+			#j = j + 3
+			#k = k + 3
+			#l = l + 3
+
+
+
+
+
